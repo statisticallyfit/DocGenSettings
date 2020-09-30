@@ -1,0 +1,146 @@
+((=- Default to the notebook output style -=))
+((*- if not cell_style is defined -*))
+    ((* set cell_style = 'style_jupyter.tplx' *))
+((*- endif -*))
+
+((=- Inherit from the specified cell style. -=))
+((* extends cell_style *))
+
+
+
+
+% --------------------------------------------------------------------------------------
+
+((* block packages *))
+((( super() )))
+
+%%%%\usepackage[left=1cm, right=1cm, top=1cm, bottom=1cm]{geometry}
+
+\usepackage{environ} % for \NewEnviron
+
+\usepackage{graphicx} % for \scalebox
+
+((* endblock packages *))
+
+
+
+% --------------------------------------------------------------------------------------
+
+
+
+((*- block docclass -*))
+\documentclass[11pt]{article}
+((*- endblock docclass -*))
+
+
+
+% --------------------------------------------------------------------------------------
+
+
+((*- block definitions -*))
+    ((( super() )))
+    
+    % FONT TYPES --------------------------------------------------------
+    
+    \setmainfont{Artifika}
+    \setmonofont{Monaco}
+    
+    %%%%%\setmathfont{"Latin Modern Roman Unslanted"}
+    %%%%%\setmathfont{GFS Artemisia}
+
+
+    % Scale length for the equations (arg for scalebox) -----------------
+    \def \scalelength{1.4}
+    
+    % New argument to store result in after the equation width function
+    \newlength{\eqlength}
+    
+    
+
+((*- endblock definitions -*))    
+
+
+
+
+% --------------------------------------------------------------------------------------
+
+
+((*- block commands -*))
+((( super() )))
+        
+        
+    ((* block margins *))
+    %\geometry{left=1cm, right=1cm, top=1cm, bottom=1cm}
+    ((* endblock margins *))
+    
+        
+    % ENVIRONMENT -------------------------------------------------------
+    \NewEnviron{myequation}{%
+    \begin{equation}
+    \scalebox{1.4}{$\BODY$} %TODO set scalelength here isntead of 1.4
+    \end{equation}
+    }
+    
+    % ALIGN EQUATION WIDTH FINDER ---------------------------------------
+
+\makeatletter
+\newcommand{\getEquationWidth}[2]{%
+  \setbox\z@=\vbox{
+    \begin{align*}
+    \scalebox{1.4}{$#2$} % TODO scalelength here
+    \ifmeasuring@\else\global\let\got@maxcolwd\maxcolumn@widths\fi
+    \end{align*}
+  }%
+  \begingroup
+  \def\or{+}\edef\x{\endgroup#1=\dimexpr\got@maxcolwd\relax}\x}
+\makeatother
+
+
+((*- endblock commands -*))
+
+
+
+
+% --------------------------------------------------------------------------------------
+% Display latex (rendering as scaled)
+
+    
+((* block data_latex -*))
+    ((*- if output.latex: -*)) 
+    ((*- if output.latex.startswith('$'): -*)) 
+        
+    ((= Storing equation length =))
+    %\getEquationWidth{\eqlength}{ ((( output.latex | strip_dollars ))) } 
+    %\setlength{\eqlength}{1600pt}
+    
+    ((= Replace $ symbols and pass result through the aligner function to get the equation's width =))
+        %\begin{myequation}
+        \scalebox{1.4}{$
+        ((( output.latex | strip_dollars )))
+        $}
+        %\end{myequation}
+    ((*- else -*))
+        ((( output.latex )))
+    ((*- endif -*))
+    ((*- endif -*))
+((* endblock data_latex *))
+
+
+
+
+% --------------------------------------------------------------------------------------
+
+% Making the pdf size larger based on scaled equation
+
+((* block body *))
+
+%\the\eqlength
+
+
+    ((( super() )))
+
+
+\pdfpagewidth \eqlength
+    
+((* endblock body *))
+
