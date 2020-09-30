@@ -1,0 +1,21 @@
+((*- extends 'article.tplx' -*))
+
+%===============================================================================
+% Input
+%===============================================================================
+
+((* block input scoped *))
+   ((( wrap_text(88) )))
+((* endblock input *))
+
+%===============================================================================
+% Output
+%===============================================================================
+
+% Display stream ouput with coloring
+((* block stream *))
+    \begin{Verbatim}[commandchars=\\\{\},fontsize=\footnotesize]
+((( output.text | wrap_text(86) | escape_latex | ansi2latex )))
+    \end{Verbatim}
+((* endblock stream *))
+

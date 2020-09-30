@@ -1,0 +1,1 @@
+/development/bin/python/miniconda3/envs/pymatrix_env/etc/jupyter/nbconfig/notebook.json

@@ -1,0 +1,1 @@
+/development/bin/python/miniconda3/envs/CONDA_ENV_NAME/share/jupyter/nbconvert/templates
